@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+		<canvas id = "canvas" width ="1300" height = "600" >
+		</canvas>
+		<script>	
+			const  canvas = document.getElementById("canvas");
+			const context = canvas.getContext("2d");
+			const leftKey = 37;
+			const upKey = 38;
+			const rightKey = 39;
+			const downKey = 40;
+			const image = new Image();
+			image.src = "http://wallpapercraft.net/wp-content/uploads/2016/05/Milk-cookies-ghosts-PacMan-simple.jpg";
+			const heroImg = new Image();
+			heroImg.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Pacman.svg/542px-Pacman.svg.png" ;			
+			const enemyImg = new Image();
+			enemyImg.src = "https://t1.rbxcdn.com/70b2a892a1650d8d65c1d3bf7c82d303";
+			const gameData = 
+			{
+				hero: 
+				{
+					x: 0,
+					y: 500,
+					width: 80,
+					height: 80,
+					xDelta: 12,
+					yDelta: 12,
+					img: heroImg  
+				},
+				badGuys: []
+			}
+			const enemies = gameData.badGuys;
+			document.addEventListener('keydown', function(event) 
+			{
+				const hero = gameData.hero;
+				if(event.keyCode === upKey && hero.y - hero.yDelta >= 0 )
+				{
+					hero.y = hero.y - hero.yDelta;
+				}
+				else if(event.keyCode === downKey && hero.y + hero.yDelta <= canvas.height-hero.height)
+				{
+					hero.y = hero.y + hero.yDelta;
+				}
+				else if(event.keyCode === leftKey && hero.x - hero.xDelta >= 0)
+				{
+					hero.x = hero.x - hero.xDelta;
+				}
+				else if(event.keyCode === rightKey && hero.x + hero.xDelta <= canvas.width-hero.width)
+				{
+					hero.x = hero.x + hero.xDelta;
+				}
+			}, false);
+			const forEach = function(arr, func)
+			{
+				const helper = function(index)
+				{
+					if (index === arr.length)
+					{
+						return;
+					}
+					func(arr[index]);
+					helper(index + 1);
+				};
+				helper(0);
+			};
+			const doesCoincide = function()
+			{
+				forEach(enemies, function(enemy)
+				{
+					hero = gameData.hero;
+					if((hero.x <= enemy.x && enemy.x <= hero.x + hero.width) || (hero.x <= enemy.x + enemy.width &&  enemy.width + enemy.x <= hero.x + hero.width))
+					{
+						if((hero.y <= enemy.y && enemy.y <= hero.y + hero.height) || (hero.y <= enemy.y + enemy.height &&  enemy.height + enemy.y <= hero.y + hero.height))
+						{
+							alert("Game Over!!!");
+							gameData.badGuys.splice(0, gameData.badGuys.length) ;
+							createCharacter(10, canvas.width, canvas.height);
+						}
+					}
+				});
+			};
+			
+			const draw = function()
+			{
+				context.drawImage(image, 0, 0, canvas.width, canvas.height);
+				context.drawImage(heroImg, gameData.hero.x, gameData.hero.y, gameData.hero.width, gameData.hero.height);
+				forEach(enemies, function(enemy)
+				{
+					context.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
+				});
+			};
+			const rand = function(num)
+			{
+				return Math.floor(Math.random() * num) + 1;
+			};
+			const createCharacter = function(count, canvasWidth, canvasHeight)
+			{
+				if(count === 0)
+				{
+					return;
+				}
+				enemies[enemies.length] = 
+				{
+					x: rand(canvasWidth - 75),
+					y: rand(canvasHeight - 75),
+					width: 75,
+					height: 75,
+					xDelta: 3,
+					yDelta: -3,
+					img: enemyImg
+				};
+				count--;
+				createCharacter(count, canvasWidth, canvasHeight);
+			};
+			const updateData = function()
+			{
+				forEach(enemies, function(enemy)
+				{
+					if(enemy.x >= canvas.width - enemy.width || enemy.x <= 0)
+					{
+						enemy.xDelta = (-1)*enemy.xDelta;
+					}
+					if(enemy.y >= canvas.height - enemy.height || enemy.y <= 0)
+					{
+						enemy.yDelta = (-1)*enemy.yDelta;
+					}
+					enemy.x += enemy.xDelta;
+					enemy.y += enemy.yDelta;
+				});
+				doesCoincide();
+			};
+			const loop = function()
+			{
+				draw();
+				updateData();
+				requestAnimationFrame(loop);
+			};
+			createCharacter(10, canvas.width, canvas.height);
+			loop();
+		</script>
+	</body>
+</html>
+
+
+
+
+
+

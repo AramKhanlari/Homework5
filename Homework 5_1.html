@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+		<canvas id="mycanvas" width ="500" height = "500"></canvas>
+		<script>
+			const canvas=document.getElementById("mycanvas");
+			const ctx=canvas.getContext("2d");
+			const colors = ['red', 'green', 'black', 'orange', 'blue'];
+			const points = [];
+			//forEach for a given array and a functionwith recursion
+			const forEach = function(arr, func)
+			{
+				const helper = function(index)
+				{
+					if (index === arr.length)
+					{
+						return;
+					}
+					func(arr[index]);
+					helper(index + 1);
+				};
+				helper(0);
+			};
+			//the drawing function
+			const draw = function()
+			{
+			
+				forEach(points, function(points)
+				{
+					ctx.fillStyle = points.color;
+					ctx.fillRect(points.x, points.y, points.width, points.height);
+				});
+			};
+			//creating the points
+			const create = function(count, canvasWidth, canvasHeight)
+			{
+				const rand = function(num) 
+				{
+					return Math.floor(Math.random() * num + 1);
+				};
+				if(count === 0)
+				{
+					return;
+				}
+				points[points.length] = 
+				{
+					width: 30,
+					height: 30,
+					x: rand(canvasWidth - 30),
+					y: rand(canvasHeight - 30),
+					xDelta: 1,
+					yDelta: 1,
+					color: colors[rand(5)-1]
+				};
+				count--;
+				create(count, canvasWidth, canvasHeight);
+			};
+			create(15, canvas.width, canvas.height);
+			draw();
+		</script>
+	</body>
+</html>
